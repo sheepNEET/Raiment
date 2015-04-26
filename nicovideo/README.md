@@ -1,0 +1,1 @@
+This componenet is copied from [naoina/nicovideo](https://github.com/naoina/nicovideo) where it is published under the MIT License.
