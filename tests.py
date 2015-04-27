@@ -1,6 +1,8 @@
 import nicovideo as nicolib
 import pafy
 
+import video
+
 def Tests():
 	nico = nicolib.Nicovideo()
 	nico.append('sm24245546')
@@ -13,7 +15,11 @@ def Tests():
 	assert vid.user_id == '7458747'
 
 	vid = pafy.new("AuJhxd8on-M")
-	assert vid.title == '綾倉盟 - Unknown'
+	assert vid.title == '綾倉盟 - Unknown '
+
+	vid = video.VideoFromURL('http://www.nicovideo.jp/watch/sm24245546')
+	quality = vid.DownloadVideo()
+	assert quality == 'best'
 
 Tests()
 print('Success')

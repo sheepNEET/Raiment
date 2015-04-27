@@ -1,4 +1,5 @@
 import json
+import os
 
 # Make a bookmark with name = MARK_STRING and url = [anything]
 # in each folder you want to download
@@ -43,9 +44,13 @@ class Folder:
 
 # input: json file containing your bookmark info
 # usually r"C:\Users\[username]\AppData\Local\Google\Chrome\User Data\Default\Bookmarks"
-def GetTopFolder(jsonPath):
+def GetTopFolder(jsonPath = None):
+	if jsonPath is None:
+		username = os.getlogin() # not reliable
+		jsonPath = r"C:\Users\{username}\AppData\Local\Google\Chrome\User Data\Default\Bookmarks".format(username=username)
 	f = open(jsonPath, 'rb')
 	buf = f.read()
+	f.close()
 	buf = buf.decode('utf8')
 	j = json.loads(buf)
 	return Folder(j['roots']['bookmark_bar'])

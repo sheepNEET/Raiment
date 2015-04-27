@@ -1,26 +1,52 @@
+import os
+
 import video
 import bookmark
+import data
 
-bookmarkBar = bookmark.GetTopFolder('data/asd.bak')
-
+# load bookmarks from file
+bookmarkBar = bookmark.GetTopFolder()
 markedFolders = bookmarkBar.GetMarkedFolders()
 
-def Process(folder):
-	q = 0
-	supportedCount = 0
-	for link in folder.childBookmarks:
-		vid = video.VideoFromUrl(link.url)
-		if vid.type != 'unknown':
-			supportedCount += 1
-			aliveStr = 'ALIVE'
-			if not vid.IsAlive():
-				aliveStr = 'DEAD'
-			print(link.url, ' --- ', aliveStr)
-		else:
-			print(link.url, ' --- ', '***UNSUPPORTED***')
-		q += 1
-		if q > 50:
-			break
-	print(supportedCount)
+# try to load records list from file
+records = data.DownloadRecords.LoadOrCreate()
 
-Process(markedFolders[0])
+folder = markedFolders[0]
+for link in folder.childBookmarks:
+	# skip if not known video site
+	vid = video.VideoFromURL(link.url)
+	if vid.type == 'unsupported':
+		continue
+	# add to record list if not already there
+	uniqueID = video.UniqueIDfromURL(link.url)
+	if uniqueID is None:
+		raise Exception('Unexpected None for uniqueID')
+	if not records.HasRecord(uniqueID):
+		records.AddRecord(uniqueID, downloaded=False)
+		records.SaveToFile()
+	# skip if already downloaded
+	if records.GetRecord(uniqueID).downloaded:
+		print('Skipping one (already downloaded)')
+		continue
+	# mark dead if not alive
+	if records.GetRecord(uniqueID).deadAsOf is not None:
+		print('Skipping one (dead)')
+		continue
+	if not vid.IsAlive():
+		records.MarkDead(uniqueID)
+		records.SaveToFile()
+		print('Skipping one (newly discovered dead)')
+		continue
+
+	# download the video
+	print('\nNow downloading "' + uniqueID + '"')
+	quality = vid.DownloadVideo()
+	# put metadata to file, download thumbnail to file
+	info = data.VideoInfo(uniqueID, *vid.TextInfo())
+	info.SaveToFile()
+	vid.DownloadThumbnail()
+	# set downloaded = True in record list
+	records.MarkDownloaded(uniqueID, quality)
+	# save record list to file
+	records.SaveToFile()
+	print('Downloaded "' + uniqueID + '"')
