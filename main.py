@@ -14,7 +14,7 @@ markedFolders = bookmarkBar.GetMarkedFolders()
 records = data.DownloadRecords.LoadOrCreate()
 
 folder = markedFolders[0]
-for link in folder.childBookmarks[:100]:
+for link in folder.childBookmarks[:200]:
 	# time to stop downloading?
 	f = open(ABORT_FILE)
 	abortNow = len(f.read()) > 0
@@ -46,6 +46,9 @@ for link in folder.childBookmarks[:100]:
 		records.MarkDead(uniqueID)
 		records.SaveToFile()
 		print('Skipping one (newly discovered dead)')
+		continue
+	if not vid.IsAcceptableLength():
+		print('Skipping one (video too long)')
 		continue
 
 	# download the video

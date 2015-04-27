@@ -7,7 +7,7 @@ def Tests():
 	nico = nicolib.Nicovideo()
 	nico.append('sm24245546')
 	for v in nico:
-		assert v.title == '【第13回MMD杯本選】Paranoia!!!! 【東方MMD-PV】'
+		assert v.title == '【第13回MMD杯本選】Paranoia!!!! 【東方MMD-PV】 '
 
 	vid = nicolib.Video('sm24245546')
 	assert vid.title == '【第13回MMD杯本選】Paranoia!!!! 【東方MMD-PV】'
