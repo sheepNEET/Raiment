@@ -1,5 +1,6 @@
 import os
 import urllib.request
+import time
 
 import nicovideo as nicolib
 import pafy
@@ -60,13 +61,20 @@ class YoutubeVideo:
 		self.type = 'youtube'
 		self.uniqueID = UniqueIDfromURL(self.url)
 
-	def Initialize(self):
+	def Initialize(self, attempt = 0):
 		if self.vid is not None:
 			return True
 		try:
 			self.vid = pafy.new(self.url)
 		except OSError:
 			return False
+		except (ValueError, KeyError):
+			time.sleep(2)
+			if attempt < 5:
+				print('Retrying Youtube video (attempt {0})'.format(attempt+1))
+				self.Initialize(attempt + 1)
+			else:
+				raise Exception('Failed to open Youtube video')
 		return True
 
 	def IsAlive(self):
@@ -80,7 +88,9 @@ class YoutubeVideo:
 	def DownloadThumbnail(self):
 		if not self.Initialize():
 			raise Exception()
-		url = self.vid.bigthumb
+		url = self.vid.bigthumbhd
+		if url == '':
+			url = self.vid.bigthumb
 		if url == '':
 			url = self.vid.thumb
 

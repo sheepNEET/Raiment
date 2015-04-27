@@ -14,7 +14,7 @@ markedFolders = bookmarkBar.GetMarkedFolders()
 records = data.DownloadRecords.LoadOrCreate()
 
 folder = markedFolders[0]
-for link in folder.childBookmarks[:10]:
+for link in folder.childBookmarks[:100]:
 	# time to stop downloading?
 	f = open(ABORT_FILE)
 	abortNow = len(f.read()) > 0
