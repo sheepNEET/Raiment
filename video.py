@@ -1,5 +1,4 @@
-from nicovideo import Nicovideo
-import nicovideo
+import nicovideo as nicolib
 import pafy
 
 def IsYoutube(url):
@@ -14,40 +13,59 @@ def IsNicovideo(url):
 	else:
 		return False
 
-def IsAliveYoutube(url):
-	try:
-		vid = pafy.new(url)
-	except(OSError):
-		return False
-	return True
-
-def IsAliveNico(url):
-	pos = url.find('nicovideo.jp/watch/')
-	url = url[pos+19:]
-	nico = Nicovideo()
-	try:
-		nico.append(url)
-	except(nicovideo.DeletedError):
-		return False
-	return True
-
-class Video:
-	UNKNOWN = 0
-	YT = 1
-	NICO = 2
+class UnsupportedVideo:
 	def __init__(self, url):
 		self.url = url
-		if IsYoutube(self.url):
-			self.type = Video.YT
-		elif IsNicovideo(self.url):
-			self.type = Video.NICO
-		else:
-			self.type = Video.UNKNOWN
+		self.type = 'unknown'
+	def IsAlive(self):
+		return False
 
-		self.__IsAlive = {Video.YT : IsAliveYoutube, Video.NICO : IsAliveNico, Video.UNKNOWN : lambda x:False}[self.type]
-		self.isAlive = None
+class YoutubeVideo:
+	def __init__(self, url):
+		self.url = url
+		self.vid = None
+		self.type = 'youtube'
+
+	def Initialize(self):
+		if self.vid is not None:
+			return True
+		try:
+			self.vid = pafy.new(self.url)
+		except OSError:
+			return False
+		return True
 
 	def IsAlive(self):
-		if self.isAlive is None:
-			self.isAlive = self.__IsAlive(self.url)
-		return self.isAlive
+		if not self.Initialize():
+			return False
+		return True
+
+class NicoVideo:
+	def __init__(self, url):
+		self.url = url
+		self.vid = None
+		self.type = 'nico'
+
+	def Initialize(self):
+		if self.vid is not None:
+			return True
+		pos = self.url.find('nicovideo.jp/watch/')
+		sm = self.url[pos+19:]
+		try:
+			self.vid = nicolib.Video(sm)
+		except nicolib.DeletedError:
+			return False
+		return True
+
+	def IsAlive(self):
+		if not self.Initialize():
+			return False
+		return True
+
+def VideoFromUrl(url):
+	if IsYoutube(url):
+		return YoutubeVideo(url)
+	elif IsNicovideo(url):
+		return NicoVideo(url)
+	else:
+		return UnsupportedVideo(url)
