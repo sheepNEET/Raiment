@@ -105,7 +105,7 @@ class YoutubeVideo:
 		if not self.Initialize():
 			raise Exception()
 
-		stream = self.vid.getbest()
+		stream = self.vid.getbest(preftype='mp4')
 		quality = str(stream.dimensions[1]) + 'p'
 
 		if os.path.exists(path + '.mp4'):

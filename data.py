@@ -56,7 +56,7 @@ class DownloadRecords:
 			records.append(record.ToDict())
 		d = {}
 		d['records'] = records
-		return json.dumps(d)
+		return json.dumps(d, indent=4)
 
 	@staticmethod
 	def LoadOrCreate(jsonPath = None):
@@ -141,4 +141,4 @@ class VideoInfo:
 		d['desc'] = self.desc
 		d['myName'] = self.myName
 		d['myDesc'] = self.myDesc
-		return json.dumps(d, ensure_ascii=False)
+		return json.dumps(d, ensure_ascii=False, indent=4)

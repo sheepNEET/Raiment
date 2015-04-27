@@ -4,6 +4,8 @@ import video
 import bookmark
 import data
 
+ABORT_FILE = 'data/Abort.txt'
+
 # load bookmarks from file
 bookmarkBar = bookmark.GetTopFolder()
 markedFolders = bookmarkBar.GetMarkedFolders()
@@ -12,7 +14,15 @@ markedFolders = bookmarkBar.GetMarkedFolders()
 records = data.DownloadRecords.LoadOrCreate()
 
 folder = markedFolders[0]
-for link in folder.childBookmarks:
+for link in folder.childBookmarks[:10]:
+	# time to stop downloading?
+	f = open(ABORT_FILE)
+	abortNow = len(f.read()) > 0
+	f.close()
+	if abortNow:
+		print('\nAborted')
+		break
+
 	# skip if not known video site
 	vid = video.VideoFromURL(link.url)
 	if vid.type == 'unsupported':
