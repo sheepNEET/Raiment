@@ -1,0 +1,92 @@
+#videoDiv, #controlDiv, #topDiv
+{
+	/*prevent div from being highlighted on fullscreen toggle*/
+	/*stackoverflow.com/questions/69430*/
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#controlDiv
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#volumeBar
+{
+	float: right;
+	margin-right: 5%;
+	-webkit-appearance: none;
+	height: 36px;
+	width: 20%;
+	background: #1B1B1B;
+	border: 0px;
+}
+
+#volumeBar:focus
+{
+	outline: none;
+}
+
+#volumeBar::-ms-track 
+{
+	background: transparent;
+	border-color: transparent;
+	color: transparent;
+}
+
+#volumeBar::-webkit-slider-thumb
+{
+	-webkit-appearance: none;
+	border: 1px solid #707070;
+	background: #C0C0C0;
+	height: 22px;
+	width: 22px;
+	margin-top: -10px;
+	border-radius: 12px;
+}
+
+#volumeBar::-webkit-slider-runnable-track {
+    width: 300px;
+    height: 5px;
+    background: #505050;
+    border: none;
+    border-radius: 3px;
+}
+
+#seekBar
+{
+	float:left;
+	margin-left: 5%;
+	-webkit-appearance: none;
+	height: 36px;
+	width: 60%;
+	background: #303030;
+	border: 0px;
+}
+
+#seekBar:focus
+{
+	outline: none;
+}
+
+#seekBar::-ms-track 
+{
+	background: transparent;
+	border-color: transparent;
+	color: transparent;
+}
+
+#seekBar::-webkit-slider-thumb
+{
+	-webkit-appearance: none;
+	border: 1px solid #707070;
+	background: #C0C0C0;
+	height: 36px;
+	width: 22px;
+	margin-top: 0px; /*FF and IE req*/
+	border-radius: 3px;
+}

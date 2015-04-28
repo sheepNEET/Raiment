@@ -67,7 +67,7 @@ class YoutubeVideo:
 			self.vid = pafy.new(self.url)
 		except OSError:
 			return False
-		except (ValueError, KeyError):
+		except (ValueError, KeyError, AttributeError):
 			time.sleep(2)
 			if attempt < 5:
 				print('Retrying Youtube video (attempt {0})'.format(attempt+1))
@@ -93,7 +93,7 @@ class YoutubeVideo:
 		if url == '':
 			url = self.vid.thumb
 
-		toFolder = config.GetThumbnailFolder
+		toFolder = config.GetThumbnailFolder()
 		path = toFolder + self.UniqueID() + '.jpg'
 
 		DownloadFromURL(url, path)

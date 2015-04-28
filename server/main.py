@@ -3,6 +3,7 @@ from tornado.web import RequestHandler, StaticFileHandler
 import tornado.web
 import os
 import random
+random.seed()
 
 import config
 
