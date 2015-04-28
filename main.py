@@ -14,7 +14,7 @@ markedFolders = bookmarkBar.GetMarkedFolders()
 records = data.DownloadRecords.LoadOrCreate()
 
 folder = markedFolders[0]
-for link in folder.childBookmarks[:200]:
+for link in folder.childBookmarks[:600]:
 	# time to stop downloading?
 	f = open(ABORT_FILE)
 	abortNow = len(f.read()) > 0
@@ -36,19 +36,20 @@ for link in folder.childBookmarks[:200]:
 		records.SaveToFile()
 	# skip if already downloaded
 	if records.GetRecord(uniqueID).downloaded:
-		print('Skipping one (already downloaded)')
+		# print('Skipping one (already downloaded)')
 		continue
 	# mark dead if not alive
 	if records.GetRecord(uniqueID).deadAsOf is not None:
-		print('Skipping one (dead)')
+		# print('Skipping one (dead)')
 		continue
 	if not vid.IsAlive():
 		records.MarkDead(uniqueID)
 		records.SaveToFile()
 		print('Skipping one (newly discovered dead)')
 		continue
+	# skip if Youtube video over 15 minutes
 	if not vid.IsAcceptableLength():
-		print('Skipping one (video too long)')
+		print('Skipping one (video "{0}" is too long)'.format(uniqueID))
 		continue
 
 	# download the video

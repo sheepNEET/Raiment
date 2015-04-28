@@ -1,6 +1,7 @@
 import os
 import urllib.request
 import time
+import http
 
 import nicovideo as nicolib
 import pafy
@@ -199,7 +200,18 @@ class NicoVideo:
 		if os.path.exists(path + '.flv'):
 			if os.path.getsize(path + '.flv') > 0:
 				raise Exception('Nico downloader: File already exists '+ self.vid.video_id)
-		nico.getvideo(self.vid.video_id, path)
+
+		for tries in range(5):
+			try:
+				nico.getvideo(self.vid.video_id, path)
+				break
+			except http.client.IncompleteRead:
+				if os.path.exists(path + '.mp4'):
+					os.remove(path + '.mp4')
+				if os.path.exists(path + '.flv'):
+					os.remove(path + '.flv')
+			if tries == 5:
+				raise Exception('Failed to download video ' + self.UniqueID())
 
 		quality = 'best'
 		return quality
