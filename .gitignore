@@ -3,5 +3,5 @@
 *.bak
 .idea
 data
-server/files
 server/data
+jquery-1.11.2.js

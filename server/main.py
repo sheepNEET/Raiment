@@ -2,6 +2,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, StaticFileHandler
 import tornado.web
 import os
+import random
 
 import config
 
@@ -31,8 +32,9 @@ class VideoHandler(StaticFileHandler):
 		return super().get_content(abspath, start, end)
 
 class MainHandler(RequestHandler):
-    def get(self):
-        self.render("index.html")
+	def get(self):
+		self.render("index.html", VIDEO_FILENAME = random.choice(videos))
+		# self.render("index.html", VIDEO_FILENAME = test)
 
 class WebHandler(RequestHandler):
     def get(self, filename):

@@ -1,0 +1,152 @@
+<html>
+<head></head>
+<body bgcolor="#1B1B1B">
+<div style="height: 60px;"></div>
+<div id="videoDiv" align="center">
+	<video id="mainVideo" autoplay preload="none" style="object-fit: contain;">
+	  <source src="{{VIDEO_FILENAME}}" type="video/mp4">
+	Your browser does not support the video tag.
+	</video>
+</div>
+<div id="controlDiv" align="center">
+	<input type="range" id="seekBar" value="0">
+	<input type="range" id="volumeBar" value="100">
+</div>
+
+<script src="jquery-1.11.2.js"></script>
+<script>
+function SeekChange()
+{
+	var video = $("#mainVideo").get(0);
+	var newTime = video.duration * ($("#seekBar").val() / 100)
+	video.currentTime = newTime;
+}
+$("#seekBar").change(SeekChange);
+
+function VolumeChange()
+{
+	var video = $("#mainVideo").get(0);
+	video.volume = $("#volumeBar").val() / 100;
+}
+$("#volumeBar").change(VolumeChange);
+
+var isFullscreen = false;
+function IsFullscreen()
+{
+	if(document.webkitIsFullScreen)
+		return document.webkitIsFullScreen;
+	else if(document.mozFullScreen)
+		return document.mozFullScreen;
+	else
+		return (document.fullScreenElement && document.fullScreenElement !== null);
+}
+function OnResize()
+{
+	if(IsFullscreen())
+	{
+		var vidWidth = $("#mainVideo").get(0).offsetWidth;
+		var vidHeight = $("#mainVideo").get(0).offsetHeight;
+		var vidRatio = vidWidth/vidHeight;
+		var winWidth = $(window).width();
+		var winHeight = $(window).height();
+		var winRatio = winWidth/winHeight;
+		if(vidRatio > winRatio)
+		{
+			//vid is longer than window
+			$("#mainVideo").css("min-width", $(window).width());
+			$("#mainVideo").css("min-height", "");
+
+		}
+		else if(vidRatio < winRatio)
+		{
+			//window is longer than vid
+			$("#mainVideo").css("min-width", "");
+			$("#mainVideo").css("min-height", $(window).height());
+		}
+		else
+		{
+			//exactly the same ratio
+			$("#mainVideo").css("min-width", $(window).width());
+			$("#mainVideo").css("min-height", $(window).height());
+		}
+		$("#mainVideo").css("max-width", $(window).width());
+		$("#mainVideo").css("max-height", $(window).height());
+	}
+	else
+	{
+		$("#mainVideo").css("min-width", "640px");
+		$("#mainVideo").css("max-width", $(window).width() - 120);
+		$("#mainVideo").css("min-height", "");
+		$("#mainVideo").css("max-height", "");
+	}
+}
+$(window).resize(OnResize);
+
+function TogglePlay()
+{
+	var video = $("#mainVideo").get(0);
+	if(video.paused)
+		video.play();
+	else
+		video.pause();
+}
+function ToggleFullscreen()
+{
+	var video = $("#videoDiv").get(0);
+	if(!IsFullscreen())
+	{
+		if (video.requestFullscreen)
+			video.requestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+		else if (video.msRequestFullscreen)
+			video.msRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+		else if (video.mozRequestFullScreen)
+			video.mozRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+		else if (video.webkitRequestFullscreen)
+			video.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+		isFullscreen = true;
+		console.log("set fullscreen");
+	}
+	else
+	{
+		if (document.cancelFullScreen)
+			document.cancelFullScreen();
+		else if (document.exitFullScreen)
+			document.exitFullScreen();
+		else if (document.mozCancelFullScreen)
+			document.mozCancelFullScreen();
+		else if (document.webkitCancelFullScreen)
+			document.webkitCancelFullScreen();
+		else if (document.webkitExitFullScreen)
+			document.webkitExitFullScreen();
+		else if(document.msExitFullscreen)
+			document.msExitFullscreen();
+		isFullscreen = false;
+		console.log("cancelled fullscreen");
+	}
+}
+var timeSinceClick = 0;
+var lastMouseTimeout;
+function OnVideoClick(e)
+{
+	if(e.which == 1) //left click
+	{
+		if(($.now() - timeSinceClick) < 350)
+		{
+			clearTimeout(lastMouseTimeout);
+			ToggleFullscreen();
+		}
+		else
+		{
+			timeSinceClick = $.now();
+			lastMouseTimeout = setTimeout(TogglePlay, 350);
+		}
+	}
+}
+$("#mainVideo").mousedown(OnVideoClick);
+
+document.addEventListener("keydown", function(e){console.log("doccccc")});
+document.addEventListener("mousedown", function(e){console.log("ayaya")});
+</script>
+
+</body>
+</html>

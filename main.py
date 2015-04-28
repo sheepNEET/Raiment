@@ -51,6 +51,9 @@ for link in folder.childBookmarks[:600]:
 	# download the video
 	print('\nNow downloading "' + uniqueID + '"')
 	quality = vid.DownloadVideo()
+	if quality is None:
+		print('Failed to download ' + uniqueID)
+		continue
 	# put metadata to file, download thumbnail to file
 	info = data.VideoInfo(uniqueID, *vid.TextInfo())
 	info.SaveToFile()

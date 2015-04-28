@@ -198,6 +198,12 @@ class NicoVideo:
 					os.remove(path + '.mp4')
 				if os.path.exists(path + '.flv'):
 					os.remove(path + '.flv')
+			except:
+				if os.path.exists(path + '.mp4'):
+					os.remove(path + '.mp4')
+				if os.path.exists(path + '.flv'):
+					os.remove(path + '.flv')
+				return None
 			if tries == 5:
 				raise Exception('Failed to download video ' + self.UniqueID())
 
