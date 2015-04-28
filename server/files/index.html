@@ -17,6 +17,8 @@
 
 <script src="jquery-1.11.2.js"></script>
 <script>
+var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
 var currentVideoWidth = 0;
 var currentVideoHeight = 0;
 function VideoMetadata()
@@ -65,7 +67,7 @@ function OnResize()
 		var vidHeight = $("#mainVideo").get(0).offsetHeight;
 		var vidRatio = vidWidth/vidHeight;
 		var winWidth = $(window).width();
-		var winHeight = $(window).height();
+		var winHeight = window.screen.availHeight; //$(window).height() glitches on Firefox
 		var winRatio = winWidth/winHeight;
 		if(vidRatio > winRatio)
 		{
@@ -78,16 +80,23 @@ function OnResize()
 		{
 			//window is longer than vid
 			$("#mainVideo").css("min-width", "");
-			$("#mainVideo").css("min-height", $(window).height());
+			$("#mainVideo").css("min-height", window.screen.availHeight);
 		}
 		else
 		{
 			//exactly the same ratio
 			$("#mainVideo").css("min-width", $(window).width());
-			$("#mainVideo").css("min-height", $(window).height());
+			$("#mainVideo").css("min-height", window.screen.availHeight);
 		}
 		$("#mainVideo").css("max-width", $(window).width());
-		$("#mainVideo").css("max-height", $(window).height());
+		$("#mainVideo").css("max-height", window.screen.availHeight);
+
+		if(isFirefox)
+		{
+			$("#mainVideo").css("position", "relative");
+			$("#mainVideo").css("top", "50%");
+			$("#mainVideo").css("transform", "translateY(-50%)");
+		}	
 	}
 	else
 	{
@@ -97,8 +106,6 @@ function OnResize()
 		var areaWidth = $(window).width() - 120;
 		var areaHeight = $(window).height() - 60 - 40;
 		var areaRatio = areaWidth/areaHeight;
-
-		console.log(vidWidth, vidHeight, areaWidth, areaHeight);
 
 		function ClampWidth(x)
 		{
@@ -131,6 +138,13 @@ function OnResize()
 		$("#mainVideo").css("max-width", areaWidth);
 		$("#mainVideo").css("min-height", "480px");
 		$("#mainVideo").css("max-height", areaHeight);
+
+		if(isFirefox)
+		{
+			$("#mainVideo").css("position", "");
+			$("#mainVideo").css("top", "");
+			$("#mainVideo").css("transform", "");
+		}
 	}
 }
 $(window).resize(OnResize);
