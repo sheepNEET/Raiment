@@ -1,8 +1,8 @@
 # All file path-related stuff is in here
 
 def ShouldAbort():
-	f = open(ABORT_FILE_PATH)
-	abort = f.read() > 0
+	f = open(ABORT_FILE_PATH, 'r')
+	abort = len(f.read()) > 0
 	f.close()
 	return abort
 
@@ -24,7 +24,7 @@ def GetInfoFolder():
 def GetDownloadRecordPath():
 	return RECORD_LIST_FILE_PATH
 
-f = open('data/StorageFolderPath.txt')
+f = open('data/StorageFolderPath.txt', 'r')
 STORAGE_FOLDER_PATH = f.read()
 f.close()
 

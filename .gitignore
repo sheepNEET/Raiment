@@ -3,3 +3,5 @@
 *.bak
 .idea
 data
+server/files
+server/data
