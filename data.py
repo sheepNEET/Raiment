@@ -2,8 +2,7 @@ import json
 import time
 import os
 
-VIDEO_INFO_FOLDER_FILE = 'data/videoinfo_folder.txt'
-RECORD_LIST_FILE = 'data/DownloadRecords.txt'
+import config
 
 def Timestamp():
 	return int(time.time())
@@ -61,7 +60,7 @@ class DownloadRecords:
 	@staticmethod
 	def LoadOrCreate(jsonPath = None):
 		if jsonPath is None:
-			jsonPath = RECORD_LIST_FILE
+			jsonPath = config.GetDownloadRecordPath()
 		if os.path.isfile(jsonPath):
 			f = open(jsonPath, 'rb')
 			buf = f.read()
@@ -69,11 +68,11 @@ class DownloadRecords:
 			records = DownloadRecords(buf)
 		else:
 			records = DownloadRecords()
-		records.SetSavePath(RECORD_LIST_FILE)
+		records.SetSavePath(jsonPath)
 		return records
 
 	def SaveToFile(self):
-		path = RECORD_LIST_FILE
+		path = self.savePath
 		f = open(path, 'wb')
 		buf = self.Serialize()
 		bytes = buf.encode('utf8')
@@ -123,9 +122,7 @@ class VideoInfo:
 		return VideoInfo(uniqueID, d['name'], d['uploader'], d['desc'], d['myName'], d['myDesc'])
 
 	def SaveToFile(self):
-		f = open(VIDEO_INFO_FOLDER_FILE, 'r')
-		toFolder = f.read()
-		f.close()
+		toFolder = config.GetInfoFolder()
 
 		path = toFolder + self.uniqueID + '.txt'
 		f = open(path, 'wb')

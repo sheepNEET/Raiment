@@ -6,9 +6,7 @@ import http
 import nicovideo as nicolib
 import pafy
 
-CREDENTIALS_FILE = 'data/creds.txt'
-VIDEO_FOLDER_FILE = 'data/video_folder.txt'
-THUMB_FOLDER_FILE = 'data/thumb_folder.txt'
+import config
 
 def DownloadFromURL(url, outputPath):
 	response = urllib.request.urlopen(url)
@@ -95,9 +93,7 @@ class YoutubeVideo:
 		if url == '':
 			url = self.vid.thumb
 
-		f = open(THUMB_FOLDER_FILE, 'r')
-		toFolder = f.read()
-		f.close()
+		toFolder = config.GetThumbnailFolder
 		path = toFolder + self.UniqueID() + '.jpg'
 
 		DownloadFromURL(url, path)
@@ -108,9 +104,7 @@ class YoutubeVideo:
 		return (self.vid.title, self.vid.username, self.vid.description)
 
 	def DownloadVideo(self):
-		f = open(VIDEO_FOLDER_FILE, 'r')
-		toFolder = f.read()
-		f.close()
+		toFolder = config.GetVideoFolder()
 		path = toFolder + self.UniqueID()
 
 		if not self.Initialize():
@@ -167,9 +161,7 @@ class NicoVideo:
 			raise Exception()
 		url = self.vid.thumbnail_url
 
-		f = open(THUMB_FOLDER_FILE, 'r')
-		toFolder = f.read()
-		f.close()
+		toFolder = config.GetThumbnailFolder()
 		path = toFolder + self.UniqueID() + '.jpg'
 
 		DownloadFromURL(url, path)
@@ -180,19 +172,15 @@ class NicoVideo:
 		return (self.vid.title, self.vid.user_id, self.vid.description)
 
 	def DownloadVideo(self):
-		f = open(VIDEO_FOLDER_FILE, 'r')
-		toFolder = f.read()
+		toFolder = config.GetVideoFolder()
 		path = toFolder + self.UniqueID()
-		f.close()
 
 		if not self.Initialize():
 			raise Exception()
 
 		nico = nicolib.Nicovideo()
-		f = open(CREDENTIALS_FILE, 'r')
-		user, pw = f.read().split(' ')
+		user, pw = config.GetNicoCredentials()
 		nico.login(user, pw)
-		f.close()
 
 		if os.path.exists(path + '.mp4'):
 			if os.path.getsize(path + '.mp4') > 0:

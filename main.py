@@ -3,8 +3,7 @@ import os
 import video
 import bookmark
 import data
-
-ABORT_FILE = 'data/Abort.txt'
+import config
 
 # load bookmarks from file
 bookmarkBar = bookmark.GetTopFolder()
@@ -16,10 +15,7 @@ records = data.DownloadRecords.LoadOrCreate()
 folder = markedFolders[0]
 for link in folder.childBookmarks[:600]:
 	# time to stop downloading?
-	f = open(ABORT_FILE)
-	abortNow = len(f.read()) > 0
-	f.close()
-	if abortNow:
+	if config.ShouldAbort():
 		print('\nAborted')
 		break
 
