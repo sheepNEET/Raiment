@@ -14,11 +14,12 @@ def OptionalInDict(d, name):
 		return None
 
 class Record:
-	def __init__(self, uniqueID, downloaded, deadAsOf = None, quality = None):
+	def __init__(self, uniqueID, downloaded, deadAsOf = None, quality = None, wasTooLong = None):
 		self.uniqueID = uniqueID
 		self.deadAsOf = deadAsOf
 		self.downloaded = downloaded
 		self.quality = quality
+		self.wasTooLong = wasTooLong
 
 	def ToDict(self):
 		d = {}
@@ -28,6 +29,8 @@ class Record:
 		d['downloaded'] = self.downloaded
 		if self.quality is not None:
 			d['quality'] = self.quality
+		if self.wasTooLong is not None:
+			d['wasTooLong'] = self.wasTooLong
 		return d
 
 	@staticmethod
@@ -36,7 +39,18 @@ class Record:
 		downloaded = d['downloaded']
 		deadAsOf = OptionalInDict(d, 'deadAsOf')
 		quality = OptionalInDict(d, 'quality')
-		return Record(uniqueID, downloaded, deadAsOf, quality)
+		wasTooLong = OptionalInDict(d, 'wasTooLong')
+		return Record(uniqueID, downloaded, deadAsOf, quality, wasTooLong)
+
+	def VideoFileExists(self):
+		toFolder = config.GetVideoFolder()
+		path = toFolder + self.uniqueID
+		def ExistsWithExt(ext):
+			if os.path.exists(path + ext):
+				if os.path.getsize(path + ext) > 0:
+					return True
+			return False
+		return ExistsWithExt('.mp4') or ExistsWithExt('.flv') or ExistsWithExt('.swf')
 
 class DownloadRecords:
 	def __init__(self, jsonStr = None):
@@ -94,8 +108,8 @@ class DownloadRecords:
 		else:
 			return False
 
-	def AddRecord(self, uniqueID, downloaded, deadAsOf = None, quality = None):
-		self.records.append(Record(uniqueID, downloaded, deadAsOf, quality))
+	def AddRecord(self, uniqueID, downloaded, deadAsOf = None, quality = None, wasTooLong = None):
+		self.records.append(Record(uniqueID, downloaded, deadAsOf, quality, wasTooLong))
 
 	def MarkDownloaded(self, uniqueID, quality):
 		record = self.GetRecord(uniqueID)
@@ -106,6 +120,14 @@ class DownloadRecords:
 		record = self.GetRecord(uniqueID)
 		if record.deadAsOf is None:
 			record.deadAsOf = Timestamp()
+
+	def MarkTooLong(self, uniqueID, lengthInSeconds):
+		record = self.GetRecord(uniqueID)
+		record.wasTooLong = lengthInSeconds
+
+	def UnmarkTooLong(self, uniqueID):
+		record = self.GetRecord(uniqueID)
+		record.wasTooLong = None
 
 class VideoInfo:
 	def __init__(self, uniqueID, name = '', uploader = '', description = '', myName = '', myDesc = ''):

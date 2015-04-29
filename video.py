@@ -124,11 +124,8 @@ class YoutubeVideo:
 
 		return quality
 
-	def IsAcceptableLength(self):
-		if self.vid.length > (60 * 15):
-			return False
-		else:
-			return True
+	def GetLength(self):
+		return self.vid.length
 
 class NicoVideo:
 	def __init__(self, url):
@@ -210,8 +207,8 @@ class NicoVideo:
 		quality = 'best'
 		return quality
 
-	def IsAcceptableLength(self):
-		return True # all videos guaranteed <100MB anyways
+	def GetLength(self):
+		self.vid.length
 
 def VideoFromURL(url):
 	if __IsYoutube(url):

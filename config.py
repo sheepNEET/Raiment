@@ -33,3 +33,8 @@ ABORT_FILE_PATH = 'data/Abort.txt'
 NICO_LOGIN_FILE_PATH = 'data/creds.txt'
 
 RECORD_LIST_FILE_PATH = 'data/DownloadRecords.txt'
+
+MAX_YOUTUBE_LENGTH = (60 * 15)
+
+def GetMaxYoutubeLength():
+	return MAX_YOUTUBE_LENGTH

@@ -23,6 +23,7 @@ for link in bookmarks:
 	vid = video.VideoFromURL(link.url)
 	if vid.type == 'unsupported':
 		continue
+
 	# add to record list if not already there
 	uniqueID = video.UniqueIDfromURL(link.url)
 	if uniqueID is None:
@@ -30,23 +31,35 @@ for link in bookmarks:
 	if not records.HasRecord(uniqueID):
 		records.AddRecord(uniqueID, downloaded=False)
 		records.SaveToFile()
+
 	# skip if already downloaded
 	if records.GetRecord(uniqueID).downloaded:
-		# print('Skipping one (already downloaded)')
-		continue
+		if records.GetRecord(uniqueID).VideoFileExists():
+			continue
+		else:
+			print('Redownloading previously downloaded video (video was deleted?)')
+
 	# mark dead if not alive
 	if records.GetRecord(uniqueID).deadAsOf is not None:
-		# print('Skipping one (dead)')
 		continue
 	if not vid.IsAlive():
 		records.MarkDead(uniqueID)
 		records.SaveToFile()
 		print('Skipping one (newly discovered dead)')
 		continue
+
 	# skip if Youtube video over 15 minutes
-	if not vid.IsAcceptableLength():
-		print('Skipping one (video "{0}" is too long)'.format(uniqueID))
-		continue
+	if vid.type == 'youtube':
+		wasTooLong = records.GetRecord(uniqueID).wasTooLong
+		if wasTooLong is not None:
+			if wasTooLong > config.GetMaxYoutubeLength():
+				continue
+			else:
+				records.UnmarkTooLong(uniqueID)
+		if vid.GetLength() > config.GetMaxYoutubeLength():
+			records.MarkTooLong(uniqueID, vid.GetLength())
+			print('Skipping "{0}" (too long)'.format(uniqueID))
+			continue
 
 	# download the video
 	print('\nNow downloading "' + uniqueID + '"')
@@ -54,12 +67,15 @@ for link in bookmarks:
 	if quality is None:
 		print('Failed to download ' + uniqueID)
 		continue
+
 	# put metadata to file, download thumbnail to file
 	info = data.VideoInfo(uniqueID, *vid.TextInfo())
 	info.SaveToFile()
 	vid.DownloadThumbnail()
+
 	# set downloaded = True in record list
 	records.MarkDownloaded(uniqueID, quality)
+
 	# save record list to file
 	records.SaveToFile()
 	print('Downloaded "' + uniqueID + '"')
