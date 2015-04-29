@@ -87,7 +87,7 @@
 	background: #C0C0C0;
 	height: 36px;
 	width: 22px;
-	margin-top: 0px; /*FF and IE req*/
+	margin-top: 0px; /* FF and IE req */
 	border-radius: 3px;
 }
 #seekBar::-moz-range-thumb
@@ -97,10 +97,10 @@
 	background: #C0C0C0;
 	height: 36px;
 	width: 22px;
-	margin-top: 0px; /*FF and IE req*/
+	margin-top: 0px; /* FF and IE req */
 	border-radius: 3px;
 }
-#seekBar::-moz-range-track
+#seekBar::-moz-range-track /* Need to manually get rid of it on FF */
 {
     width: 0px;
     height: 0px;

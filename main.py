@@ -12,8 +12,8 @@ markedFolders = bookmarkBar.GetMarkedFolders()
 # try to load records list from file
 records = data.DownloadRecords.LoadOrCreate()
 
-folder = markedFolders[0]
-for link in folder.childBookmarks[:600]:
+bookmarks = [link for marked in markedFolders for link in marked.childBookmarks]
+for link in bookmarks:
 	# time to stop downloading?
 	if config.ShouldAbort():
 		print('\nAborted')
